@@ -8,11 +8,9 @@
  * Init the game and redirect to play the game.
  */
 $app->router->get("guess/init", function () use ($app) {
-    // Init the session for the game start, if not initiated.
-    if (!isset($_SESSION['game'])) {
-        $_SESSION['game'] = new \Rist\Guess\Guess();
-        $_SESSION['game']->random();
-    }
+    // Init the session for the game start.
+    $_SESSION['game'] = new \Rist\Guess\Guess();
+    $_SESSION['game']->random();
 
     return $app->response->redirect("guess/play");
 });
@@ -47,15 +45,12 @@ $app->router->get("guess/play", function () use ($app) {
  */
 $app->router->post("guess/play", function () use ($app) {
     // Get and use the data from the posted form
-    if (isset($_POST['makeGuess'])
-        && isset($_POST['numberGuess'])
-        && $_POST['numberGuess'] !== "") {
+    if (isset($_POST['makeGuess']) && isset($_POST['numberGuess']) && $_POST['numberGuess'] !== "") {
         $_SESSION['guessFeedback'] = $_SESSION['game']->makeGuess((int) $_POST['numberGuess']);
 
-    if ($_SESSION['game']->tries() === 0
-            || (int) $_POST['numberGuess'] === $_SESSION['game']->number()) {
+        if ($_SESSION['game']->tries() === 0 || (int) $_POST['numberGuess'] === $_SESSION['game']->number()) {
             $_SESSION['gameOver'] = true;
-    }
+        }
     } else if (isset($_POST['resetGame'])) {
         return $app->response->redirect("guess/reset");
     } elseif (isset($_POST['cheat'])) {
