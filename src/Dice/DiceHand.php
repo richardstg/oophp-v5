@@ -9,13 +9,15 @@ namespace Rist\Dice;
 class DiceHand
 {
     /**
-     * @var Dice    $dices    Array consisting of dices.
-     * @var int     $values   Array consisting of last roll of the dices.
-     * @var int     $numDices Number of dices.
+     * @var DiceHistogram       $dices          Array consisting of dices.
+     * @var Histogram           $diceHand       Histogram object.
+     * @var int                 $values         Array consisting of last roll of the dices.
+     * @var int                 $numDices       Number of dices.
      */
     public $dices;
     private $values;
     private $numDices;
+    public $histogram;
 
     /**
      * Constructor to create a DiceHand.
@@ -27,9 +29,11 @@ class DiceHand
         $this->dices  = [];
         $this->values = [];
         $this->numDices = $numDices;
+        $this->histogram = new Histogram();
 
         for ($i=0; $i < $numDices; $i++) {
-            array_push($this->dices, new Dice());
+            //array_push($this->dices, new Dice());
+            array_push($this->dices, new DiceHistogram());
             array_push($this->values, null);
         }
     }
@@ -43,6 +47,7 @@ class DiceHand
     {
         for ($i=0; $i < $this->numDices; $i++) {
             $this->values[$i] = $this->dices[$i]->rollDice();
+            $this->histogram->injectData($this->dices[$i]);
         }
     }
 

@@ -23,16 +23,18 @@ class DiceGame
     public $dice;
     public $playerPreGameScore;
     public $computerPreGameScore;
+    //public $histogram;
 
     /**
      * Constructor to create a DiceGame.
      *
      * @param int $numDices Number of dices to create, defaults to five.
      */
-    public function __construct(int $numDices = 5)
+    public function __construct(int $numDices = 1)
     {
         $this->diceHand  = new DiceHand($numDices);
         $this->dice = new Dice();
+        //$this->dice = new DiceHistogram();
         $this->numDices = $numDices;
         $this->playOrder = null;
         $this->protocol = ["player" => 0,"computer" => 0];
@@ -106,9 +108,11 @@ class DiceGame
      */
     public function computerPlay()
     {
-        $i = 0;
+        $numberOfRolls = $this->computerNumberOfRolls();
 
-        while ($i <= 1) {
+        $i = 1;
+
+        while ($i <= $numberOfRolls) {
             $this->diceHand->rollDices();
 
             if (!in_array(1, $this->diceHand->values())) {
@@ -125,6 +129,35 @@ class DiceGame
             }
         }
         $this->protocol["computer"] += $this->computerRoundPoints;
+    }
+
+    /**
+     * Get the number of rolls the computer should make.
+     *
+     * @return integer.
+     */
+    public function computerNumberOfRolls()
+    {
+        if ($this->protocol["player"] - $this->protocol["computer"] >= 80) {
+            $numberOfRolls = 18;
+        } else if ($this->protocol["player"] - $this->protocol["computer"] >= 70) {
+            $numberOfRolls = 13;
+        } else if ($this->protocol["player"] - $this->protocol["computer"] >= 60) {
+            $numberOfRolls = 9;
+        } else if ($this->protocol["player"] - $this->protocol["computer"] >= 50) {
+            $numberOfRolls = 7;
+        } else if ($this->protocol["player"] - $this->protocol["computer"] >= 40) {
+            $numberOfRolls = 6;
+        } else if ($this->protocol["player"] - $this->protocol["computer"] >= 30) {
+            $numberOfRolls = 5;
+        } else if ($this->protocol["player"] - $this->protocol["computer"] >= 20) {
+            $numberOfRolls = 4;
+        } else if ($this->protocol["player"] - $this->protocol["computer"] >= 10) {
+            $numberOfRolls = 3;
+        } else {
+            $numberOfRolls = 2;
+        }
+        return $numberOfRolls;
     }
 
     /**
